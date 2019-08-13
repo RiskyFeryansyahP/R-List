@@ -7,7 +7,7 @@ import (
 type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	FullName string `json:"fullName"`
+	FullName string `json:"fullname"`
 }
 
 var UserType = graphql.NewObject(graphql.ObjectConfig{
@@ -18,3 +18,20 @@ var UserType = graphql.NewObject(graphql.ObjectConfig{
 		"fullname": &graphql.Field{Type: graphql.String},
 	},
 })
+
+var UserInputType = graphql.NewInputObject(
+	graphql.InputObjectConfig{
+		Name: "UserInputType",
+		Fields: graphql.InputObjectConfigFieldMap{
+			"username": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"password": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"fullname": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+		},
+	},
+)
