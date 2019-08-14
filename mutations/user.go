@@ -18,12 +18,9 @@ func (mutation *Mutations) CreateUser() *graphql.Field {
 			"input": &graphql.ArgumentConfig{Type: types.UserInputType},
 		},
 		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-			users := make(map[string]interface{})
 			collection := mutation.Database.Collection("user")
 
-			for k, v := range params.Args["input"].(map[string]interface{}) {
-				users[k] = v // get the nested map in argument into variabel users
-			}
+			users := params.Args["input"].(map[string]interface{})
 
 			fmt.Println(users)
 
