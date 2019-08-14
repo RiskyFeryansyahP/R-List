@@ -35,3 +35,34 @@ var TaskType = graphql.NewObject(graphql.ObjectConfig{
 		"taskitem":        &graphql.Field{Type: graphql.NewList(TaskItemType)},
 	},
 })
+
+var TaskItemInputType = graphql.NewInputObject(
+	graphql.InputObjectConfig{
+		Name: "TaskItemInputType",
+		Fields: graphql.InputObjectConfigFieldMap{
+			"stepnum": &graphql.InputObjectFieldConfig{
+				Type: graphql.Int,
+			},
+			"item": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"complete": &graphql.InputObjectFieldConfig{
+				Type: graphql.Boolean,
+			},
+		},
+	},
+)
+
+var TaskInputType = graphql.NewInputObject(
+	graphql.InputObjectConfig{
+		Name: "TaskInputType",
+		Fields: graphql.InputObjectConfigFieldMap{
+			"taskusername": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"taskdescription": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+		},
+	},
+)
