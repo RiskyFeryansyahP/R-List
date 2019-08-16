@@ -5,9 +5,9 @@ import (
 )
 
 type User struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	FullName string `json:"fullname"`
+	Username string `json:"username" bson:"username"`
+	Password string `json:"password" bson:"password"`
+	FullName string `json:"fullname" bson:"fullname"`
 }
 
 var UserType = graphql.NewObject(graphql.ObjectConfig{

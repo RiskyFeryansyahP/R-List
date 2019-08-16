@@ -11,11 +11,12 @@ type Task_Item struct {
 }
 
 type Task struct {
-	Task_Username    string      `json:"taskusername"`
-	Task_Description string      `json:"taskdescription"`
-	Task_Item        []Task_Item `json:"taskitem"`
-	DueDate          string      `json:"duedate"`
-	Status           string      `json:"status"`
+	Task_ID          string      `json:"_id"`
+	Task_Username    string      `json:"taskusername" bson:"taskusername"`
+	Task_Description string      `json:"taskdescription" bson:"taskdescription"`
+	Task_Item        []Task_Item `json:"taskitem" bson:"taskitem"`
+	DueDate          string      `json:"duedate" bson:"duedate"`
+	Status           string      `json:"status" bson:"status"`
 }
 
 var TaskItemType = graphql.NewObject(graphql.ObjectConfig{
