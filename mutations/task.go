@@ -71,3 +71,73 @@ func (mutation *Mutations) CreateTaskItem() *graphql.Field {
 		},
 	}
 }
+
+func (mutation *Mutations) UpdateTaskItem() *graphql.Field {
+	return &graphql.Field{
+		Name: "UpdateTaskItem",
+		Type: types.TaskItemType,
+		Args: graphql.FieldConfigArgument{
+			"taskid": &graphql.ArgumentConfig{Type: graphql.String},
+			"input":  &graphql.ArgumentConfig{Type: types.TaskItemInputType},
+		},
+		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+			collection := mutation.Database.Collection("task")
+			var TaskItem types.Task_Item
+
+			id, _ := primitive.ObjectIDFromHex(params.Args["taskid"].(string))
+			task := params.Args["input"].(map[string]interface{})
+
+			// cara pertama
+			filter := bson.D{
+				primitive.E{
+					Key: "$and",
+					Value: []bson.M{
+						bson.M{"_id": id},
+						bson.M{"taskitem.stepnum": task["stepnum"]},
+					},
+				},
+			}
+
+			update := bson.D{
+				primitive.E{
+					Key: "$set",
+					Value: bson.D{
+						primitive.E{
+							Key:   "taskitem.$",
+							Value: task,
+						},
+					},
+				},
+			}
+
+			// cara kedua
+			/*
+				filter := bson.D{
+					primitive.E{
+						Key: "$and",
+						Value: []bson.D{
+							primitive.D{
+								primitive.E{
+									Key:   "_id",
+									Value: id,
+								},
+								primitive.E{
+									Key:   "taskitem.stepnum",
+									Value: task["stepnum"],
+								},
+							},
+						},
+					},
+				}
+			*/
+
+			err := collection.FindOneAndUpdate(context.Background(), filter, update).Decode(&TaskItem)
+			if err != nil {
+				log.Fatalf("Error can't update data %s \n", err.Error())
+				return nil, nil
+			}
+
+			return task, nil
+		},
+	}
+}
