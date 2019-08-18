@@ -12,6 +12,48 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+func (queries *Queries) GetTasks() *graphql.Field {
+	return &graphql.Field{
+		Name: "GetTaks",
+		Type: graphql.NewList(types.TaskType),
+		Args: graphql.FieldConfigArgument{
+			"taskusername": &graphql.ArgumentConfig{Type: graphql.String},
+		},
+		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+			var Tasks []types.Task
+			collection := queries.Database.Collection("task")
+
+			taskusername := params.Args["taskusername"]
+
+			filter := bson.D{
+				primitive.E{
+					Key:   "taskusername",
+					Value: taskusername,
+				},
+			}
+
+			result, err := collection.Find(context.Background(), filter)
+			if err != nil {
+				log.Fatalf("Can't Find Data %s \n", err.Error())
+			}
+			defer result.Close(context.Background())
+
+			for result.Next(context.Background()) {
+				var task types.Task
+
+				err = result.Decode(&task)
+				if err != nil {
+					log.Fatalf("Error Decode Task %s \n", err.Error())
+				}
+
+				Tasks = append(Tasks, task)
+			}
+
+			return Tasks, nil
+		},
+	}
+}
+
 func (queries *Queries) SelectTask() *graphql.Field {
 	return &graphql.Field{
 		Name: "SelectTask",
