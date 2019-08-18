@@ -22,5 +22,6 @@ func (query *Queries) GetRootFields() graphql.Fields {
 		"user":  query.FindUserQuery(),
 		"users": query.GetAllUsers(),
 		"task":  query.SelectTask(),
+		"tasks": query.GetTasks(),
 	}
 }
