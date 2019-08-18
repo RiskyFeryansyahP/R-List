@@ -2,21 +2,22 @@ package types
 
 import (
 	"github.com/graphql-go/graphql"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Task_Item struct {
-	StepNum  int    `json:"stepnum"`
-	Item     string `json:"taskitem"`
-	Complete bool   `json:"complete"`
+	StepNum  int    `json:"stepnum" bson:"stepnum"`
+	Item     string `json:"taskitem" bson:"item"`
+	Complete bool   `json:"complete" bson:"complete"`
 }
 
 type Task struct {
-	Task_ID          string      `json:"_id"`
-	Task_Username    string      `json:"taskusername" bson:"taskusername"`
-	Task_Description string      `json:"taskdescription" bson:"taskdescription"`
-	Task_Item        []Task_Item `json:"taskitem" bson:"taskitem"`
-	DueDate          string      `json:"duedate" bson:"duedate"`
-	Status           string      `json:"status" bson:"status"`
+	Task_ID          primitive.ObjectID `json:"_id" bson:"_id"`
+	Task_Username    string             `json:"taskusername" bson:"taskusername"`
+	Task_Description string             `json:"taskdescription" bson:"taskdescription"`
+	Task_Item        []Task_Item        `json:"taskitem" bson:"taskitem"`
+	DueDate          string             `json:"duedate" bson:"duedate"`
+	Status           string             `json:"status" bson:"status"`
 }
 
 var TaskItemType = graphql.NewObject(graphql.ObjectConfig{
@@ -31,6 +32,7 @@ var TaskItemType = graphql.NewObject(graphql.ObjectConfig{
 var TaskType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "Task",
 	Fields: graphql.Fields{
+		"_id":             &graphql.Field{Type: BSON},
 		"taskusername":    &graphql.Field{Type: graphql.String},
 		"taskdescription": &graphql.Field{Type: graphql.String},
 		"taskitem":        &graphql.Field{Type: graphql.NewList(TaskItemType)},
