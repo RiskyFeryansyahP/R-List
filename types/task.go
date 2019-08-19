@@ -7,7 +7,7 @@ import (
 
 type Task_Item struct {
 	StepNum  int    `json:"stepnum" bson:"stepnum"`
-	Item     string `json:"taskitem" bson:"item"`
+	Item     string `json:"item" bson:"item"`
 	Complete bool   `json:"complete" bson:"complete"`
 }
 
