@@ -17,9 +17,10 @@ func New(database *mongo.Database) (mutations *Mutations, err error) {
 
 func (mutation *Mutations) GetRootFields() graphql.Fields {
 	return graphql.Fields{
-		"createuser":     mutation.CreateUser(),
-		"createtask":     mutation.CreateTask(),
-		"createtaskitem": mutation.CreateTaskItem(),
-		"updatetaskitem": mutation.UpdateTaskItem(),
+		"createuser":           mutation.CreateUser(),
+		"createtask":           mutation.CreateTask(),
+		"createtaskitem":       mutation.CreateTaskItem(),
+		"updatetaskitem":       mutation.UpdateTaskItem(),
+		"updatestatuscomplete": mutation.UpdateStatusComplete(),
 	}
 }

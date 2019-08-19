@@ -141,3 +141,60 @@ func (mutation *Mutations) UpdateTaskItem() *graphql.Field {
 		},
 	}
 }
+
+func (mutation *Mutations) UpdateStatusComplete() *graphql.Field {
+	return &graphql.Field{
+		Name: "UpdateStatusComplete",
+		Type: graphql.String,
+		Args: graphql.FieldConfigArgument{
+			"taskid":   &graphql.ArgumentConfig{Type: graphql.String},
+			"stepnum":  &graphql.ArgumentConfig{Type: graphql.Int},
+			"complete": &graphql.ArgumentConfig{Type: graphql.Boolean},
+		},
+		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+			collection := mutation.Database.Collection("task")
+			taskid, _ := primitive.ObjectIDFromHex(params.Args["taskid"].(string))
+			stepnum := params.Args["stepnum"]
+			complete := params.Args["complete"].(bool)
+
+			var Task types.Task
+
+			filter := bson.D{
+				primitive.E{
+					Key: "$and",
+					Value: []bson.D{
+						primitive.D{
+							primitive.E{
+								Key:   "_id",
+								Value: taskid,
+							},
+							primitive.E{
+								Key:   "taskitem.stepnum",
+								Value: stepnum,
+							},
+						},
+					},
+				},
+			}
+
+			update := bson.D{
+				primitive.E{
+					Key: "$set",
+					Value: bson.D{
+						primitive.E{
+							Key:   "taskitem.$.complete",
+							Value: complete,
+						},
+					},
+				},
+			}
+
+			err := collection.FindOneAndUpdate(context.Background(), filter, update).Decode(&Task)
+			if err != nil {
+				log.Fatalf("error can't find task %s \n", err.Error())
+			}
+
+			return Task, nil
+		},
+	}
+}
