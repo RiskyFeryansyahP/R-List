@@ -147,17 +147,15 @@ func (mutation *Mutations) UpdateTaskItem() *graphql.Field {
 func (mutation *Mutations) UpdateStatusComplete() *graphql.Field {
 	return &graphql.Field{
 		Name: "UpdateStatusComplete",
-		Type: graphql.String,
+		Type: types.TaskType,
 		Args: graphql.FieldConfigArgument{
-			"taskid":   &graphql.ArgumentConfig{Type: graphql.String},
-			"stepnum":  &graphql.ArgumentConfig{Type: graphql.Int},
-			"complete": &graphql.ArgumentConfig{Type: graphql.Boolean},
+			"taskid":  &graphql.ArgumentConfig{Type: graphql.String},
+			"stepnum": &graphql.ArgumentConfig{Type: graphql.Int},
 		},
 		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 			collection := mutation.Database.Collection("task")
 			taskid, _ := primitive.ObjectIDFromHex(params.Args["taskid"].(string))
 			stepnum := params.Args["stepnum"]
-			complete := params.Args["complete"].(bool)
 
 			var Task types.Task
 
@@ -185,7 +183,7 @@ func (mutation *Mutations) UpdateStatusComplete() *graphql.Field {
 					Value: bson.D{
 						primitive.E{
 							Key:   "taskitem.$.complete",
-							Value: complete,
+							Value: true,
 						},
 					},
 				},
