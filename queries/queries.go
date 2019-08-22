@@ -19,9 +19,10 @@ func New(database *mongo.Database) (queries *Queries, err error) {
 
 func (query *Queries) GetRootFields() graphql.Fields {
 	return graphql.Fields{
-		"user":  query.FindUserQuery(),
-		"users": query.GetAllUsers(),
-		"task":  query.SelectTask(),
-		"tasks": query.GetTasks(),
+		"user":     query.FindUserQuery(),
+		"users":    query.GetAllUsers(),
+		"task":     query.SelectTask(),
+		"tasks":    query.GetTasks(),
+		"userauth": query.UserAuthentication(),
 	}
 }
