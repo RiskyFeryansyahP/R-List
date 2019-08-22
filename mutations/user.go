@@ -2,10 +2,12 @@ package mutations
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"log"
 
 	"github.com/confus1on/R-List/types"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/graphql-go/graphql"
@@ -22,7 +24,17 @@ func (mutation *Mutations) CreateUser() *graphql.Field {
 
 			users := params.Args["input"].(map[string]interface{})
 
-			fmt.Println(users)
+			filter := bson.D{
+				primitive.E{
+					Key:   "username",
+					Value: users["username"],
+				},
+			}
+
+			result, _ := collection.CountDocuments(context.Background(), filter)
+			if result > 0 {
+				return nil, errors.New("Couldn't use this username")
+			}
 
 			// hashing password
 			bytes, err := bcrypt.GenerateFromPassword([]byte(users["password"].(string)), 14)
