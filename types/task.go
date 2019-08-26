@@ -36,6 +36,8 @@ var TaskType = graphql.NewObject(graphql.ObjectConfig{
 		"taskusername":    &graphql.Field{Type: graphql.String},
 		"taskdescription": &graphql.Field{Type: graphql.String},
 		"taskitem":        &graphql.Field{Type: graphql.NewList(TaskItemType)},
+		"duedate":         &graphql.Field{Type: graphql.String},
+		"status":          &graphql.Field{Type: graphql.String},
 	},
 })
 
@@ -64,6 +66,12 @@ var TaskInputType = graphql.NewInputObject(
 				Type: graphql.String,
 			},
 			"taskdescription": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"duedate": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"status": &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
 			},
 		},
