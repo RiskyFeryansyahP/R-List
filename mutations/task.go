@@ -2,7 +2,7 @@ package mutations
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"log"
 
 	"github.com/confus1on/R-List/types"
@@ -25,8 +25,8 @@ func (mutation *Mutations) CreateTask() *graphql.Field {
 
 			_, err := collection.InsertOne(context.Background(), task)
 			if err != nil {
-				log.Fatalf("Error can't insert task data %s \n", err.Error())
-				return nil, nil
+				log.Printf("Error can't insert task data %s \n", err.Error())
+				return nil, errors.New(err.Error())
 			}
 
 			return task, nil
@@ -135,8 +135,8 @@ func (mutation *Mutations) UpdateTaskItem() *graphql.Field {
 
 			err := collection.FindOneAndUpdate(context.Background(), filter, update).Decode(&TaskItem)
 			if err != nil {
-				log.Fatalf("Error can't update data %s \n", err.Error())
-				return nil, nil
+				log.Printf("Error can't update data %s \n", err.Error())
+				return nil, errors.New(err.Error())
 			}
 
 			return task, nil
@@ -147,7 +147,7 @@ func (mutation *Mutations) UpdateTaskItem() *graphql.Field {
 func (mutation *Mutations) UpdateStatusComplete() *graphql.Field {
 	return &graphql.Field{
 		Name: "UpdateStatusComplete",
-		Type: types.TaskType,
+		Type: types.MessageType,
 		Args: graphql.FieldConfigArgument{
 			"taskid":  &graphql.ArgumentConfig{Type: graphql.String},
 			"stepnum": &graphql.ArgumentConfig{Type: graphql.Int},
@@ -158,6 +158,7 @@ func (mutation *Mutations) UpdateStatusComplete() *graphql.Field {
 			stepnum := params.Args["stepnum"]
 
 			var Task types.Task
+			var message types.Message
 
 			filter := bson.D{
 				primitive.E{
@@ -191,11 +192,12 @@ func (mutation *Mutations) UpdateStatusComplete() *graphql.Field {
 
 			err := collection.FindOneAndUpdate(context.Background(), filter, update).Decode(&Task)
 			if err != nil {
-				log.Fatalf("error can't find task %s \n", err.Error())
-				return nil, nil
+				log.Printf("error can't find task %s \n", err.Error())
+				return nil, errors.New(err.Error())
 			}
+			message.Message = "Success updated status task item"
 
-			return Task, nil
+			return message, nil
 		},
 	}
 }
@@ -203,7 +205,7 @@ func (mutation *Mutations) UpdateStatusComplete() *graphql.Field {
 func (mutation *Mutations) DeleteTaskItem() *graphql.Field {
 	return &graphql.Field{
 		Name: "DeleteTaskItem",
-		Type: types.TaskType,
+		Type: types.MessageType,
 		Args: graphql.FieldConfigArgument{
 			"stepnum": &graphql.ArgumentConfig{Type: graphql.Int},
 			"taskid":  &graphql.ArgumentConfig{Type: graphql.String},
@@ -214,6 +216,7 @@ func (mutation *Mutations) DeleteTaskItem() *graphql.Field {
 			stepnum := params.Args["stepnum"]
 
 			var Task types.Task
+			var message types.Message
 
 			filter := bson.D{
 				primitive.E{
@@ -252,13 +255,13 @@ func (mutation *Mutations) DeleteTaskItem() *graphql.Field {
 
 			err := collection.FindOneAndUpdate(context.Background(), filter, delete).Decode(&Task)
 			if err != nil {
-				fmt.Printf("Error %s \n", err.Error())
-				return nil, nil
+				log.Printf("Error %s \n", err.Error())
+				return nil, errors.New(err.Error())
 			}
 
-			fmt.Println(Task)
+			message.Message = "Success delete Task item!"
 
-			return nil, nil
+			return message, nil
 		},
 	}
 }
@@ -266,7 +269,7 @@ func (mutation *Mutations) DeleteTaskItem() *graphql.Field {
 func (mutation *Mutations) DeleteTask() *graphql.Field {
 	return &graphql.Field{
 		Name: "DeleteTask",
-		Type: types.TaskType,
+		Type: types.MessageType,
 		Args: graphql.FieldConfigArgument{
 			"taskid": &graphql.ArgumentConfig{Type: graphql.String},
 		},
@@ -275,6 +278,7 @@ func (mutation *Mutations) DeleteTask() *graphql.Field {
 			taskid, _ := primitive.ObjectIDFromHex(params.Args["taskid"].(string))
 
 			var Task types.Task
+			var message types.Message
 
 			filter := bson.D{
 				primitive.E{
@@ -286,11 +290,13 @@ func (mutation *Mutations) DeleteTask() *graphql.Field {
 			err := collection.FindOneAndDelete(context.Background(), filter).Decode(&Task)
 
 			if err != nil {
-				log.Fatalf("Error %s \n", err.Error())
-				return nil, nil
+				log.Printf("Error %s \n", err.Error())
+				return nil, errors.New(err.Error())
 			}
 
-			return Task, nil
+			message.Message = "Success delete Task!"
+
+			return message, nil
 		},
 	}
 }
