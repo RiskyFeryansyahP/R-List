@@ -20,6 +20,7 @@ func (mutation *Mutations) GetRootFields() graphql.Fields {
 		"createuser":           mutation.CreateUser(),
 		"createtask":           mutation.CreateTask(),
 		"deletetask":           mutation.DeleteTask(),
+		"updatestatustask":     mutation.UpdateStatusTask(),
 		"createtaskitem":       mutation.CreateTaskItem(),
 		"updatetaskitem":       mutation.UpdateTaskItem(),
 		"updatestatuscomplete": mutation.UpdateStatusComplete(),
