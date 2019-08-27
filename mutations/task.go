@@ -300,3 +300,44 @@ func (mutation *Mutations) DeleteTask() *graphql.Field {
 		},
 	}
 }
+
+func (mutation *Mutations) UpdateStatusTask() *graphql.Field {
+	return &graphql.Field{
+		Name: "UpdateStatusTask",
+		Type: types.MessageType,
+		Args: graphql.FieldConfigArgument{
+			"taskid": &graphql.ArgumentConfig{Type: graphql.String},
+		},
+		Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+			collection := mutation.Database.Collection("task")
+			taskid, _ := primitive.ObjectIDFromHex(params.Args["taskid"].(string))
+
+			var task types.Task
+			var message types.Message
+
+			filter := bson.D{
+				primitive.E{
+					Key:   "_id",
+					Value: taskid,
+				},
+			}
+
+			update := bson.D{
+				primitive.E{
+					Key:   "status",
+					Value: "done",
+				},
+			}
+
+			err := collection.FindOneAndUpdate(context.Background(), filter, update).Decode(&task)
+			if err != nil {
+				log.Printf("Error : %s \n", err.Error())
+				return nil, errors.New(err.Error())
+			}
+
+			message.Message = "Task `Status` has been updated!"
+
+			return message, nil
+		},
+	}
+}
